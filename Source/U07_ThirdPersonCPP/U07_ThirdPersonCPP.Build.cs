@@ -7,7 +7,10 @@ public class U07_ThirdPersonCPP : ModuleRules
 	public U07_ThirdPersonCPP(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
+
+		// include할 때 Module Root경로를 안써도 되게끔 해줌
+		PublicIncludePaths.Add(ModuleDirectory);
+
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
