@@ -26,8 +26,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		bool bCanMove = true;
 
-	// bUseControlRotationYaw = false
-	// MoveMentComponent->bOrientRotationToMovement = true
+	// 캐릭터 회전못하게
+	// bUseControllerRotationYaw = true;
+	// GetCharacterMovement()->bOrientRotationToMovement = false;
 	UPROPERTY(EditAnywhere)
 		bool bPawnControl = true;
 };

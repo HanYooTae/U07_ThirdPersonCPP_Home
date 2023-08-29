@@ -11,7 +11,7 @@ void UCActionData::BeginPlay(class ACharacter* InOwnerCharacter)
 		Equipment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACEquipment>(EquipmentClass, transform, InOwnerCharacter);
 
 		Equipment->SetData(EquipmentData);
-		Equipment->SetData(EquipmentColor);
+		Equipment->SetColor(EquipmentColor);
 		Equipment->SetActorLabel(GetCustomActorLabel(InOwnerCharacter, "Equipment"));
 
 		//Equipment->FinishSpawning()

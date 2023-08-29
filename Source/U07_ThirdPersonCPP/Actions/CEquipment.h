@@ -20,13 +20,13 @@ protected:
 
 public:
 	FORCEINLINE void SetData(const FEquipmentData& InData) { Data = InData; }
-	FORCEINLINE void SetData(const FLinearColor& InColor) { Color = InColor; }
+	FORCEINLINE void SetColor(const FLinearColor& InColor) { Color = InColor; }
 
 public:
 	// Play Draw Montage
 	UFUNCTION(BlueprintNativeEvent)
 		void Equip();
-	void Equip_Implementation();	
+	void Equip_Implementation();
 
 	// Attach to hand socket
 	UFUNCTION(BlueprintNativeEvent)
@@ -38,6 +38,7 @@ public:
 		void End_Equip();
 	void End_Equip_Implementation();
 
+	// 무기를 넣으면 orient를 켜주는 역할
 	UFUNCTION(BlueprintNativeEvent)
 		void Unequip();
 	void Unequip_Implementation();

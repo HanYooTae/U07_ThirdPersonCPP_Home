@@ -1,8 +1,10 @@
 #include "CEquipment.h"
 #include "Global.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
+#include "Characters/ICharacter.h"
 
 ACEquipment::ACEquipment()
 {
@@ -20,8 +22,10 @@ void ACEquipment::BeginPlay()
 
 void ACEquipment::Equip_Implementation()
 {
+	// Set State Equip
 	StateComp->SetEquipMode();
 
+	// Play Draw AnimMontage
 	if (!!Data.AnimMontage)
 		OwnerCharacter->PlayAnimMontage(Data.AnimMontage, Data.PlayRate, Data.StartSection);
 	else
@@ -33,6 +37,19 @@ void ACEquipment::Equip_Implementation()
 		End_Equip();
 	}
 
+	// bPawnControl
+	if (Data.bPawnControl == true)
+	{
+		OwnerCharacter->bUseControllerRotationYaw = true;
+		OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
+	// bCanMove
+	Data.bCanMove ? StatusComp->SetMove() : StatusComp->SetStop();
+
+	IICharacter* characterInterface = Cast<IICharacter>(OwnerCharacter);
+	CheckNull(characterInterface);
+	characterInterface->ChangeBodyColor(Color);
 }
 
 void ACEquipment::Begin_Equip_Implementation()
@@ -44,9 +61,11 @@ void ACEquipment::Begin_Equip_Implementation()
 void ACEquipment::End_Equip_Implementation()
 {
 	StateComp->SetIdleMode();
+	StatusComp->SetMove();
 }
 
 void ACEquipment::Unequip_Implementation()
 {
-
+	OwnerCharacter->bUseControllerRotationYaw = false;
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 }
