@@ -68,4 +68,7 @@ void ACEquipment::Unequip_Implementation()
 {
 	OwnerCharacter->bUseControllerRotationYaw = false;
 	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	if (OnUnequip.IsBound())
+		OnUnequip.Broadcast();
 }
