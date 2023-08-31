@@ -13,8 +13,8 @@ ACDoAction::ACDoAction()
 void ACDoAction::BeginPlay()
 {
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
-	StateComp = CHelpers::GetComponent<StateComponent>(OwnerCharacter);
-	StatusComp = CHelpers::GetComponent<StatusComponent>(OwnerCharacter);
+	StateComp = CHelpers::GetComponent<UCStateComponent>(OwnerCharacter);
+	StatusComp = CHelpers::GetComponent<UCStatusComponent>(OwnerCharacter);
 
 	Super::BeginPlay();
 	

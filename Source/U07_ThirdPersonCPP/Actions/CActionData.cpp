@@ -1,8 +1,10 @@
+		//Equipment->FinishSpawning()
 #include "CActionData.h"
 #include "CEquipment.h"
 #include "CAttachment.h"
 #include "GameFramework/Character.h"
 #include "Global.h"
+#include "Actions/CDoAction.h"
 
 void UCActionData::BeginPlay(class ACharacter* InOwnerCharacter)
 {
@@ -14,7 +16,6 @@ void UCActionData::BeginPlay(class ACharacter* InOwnerCharacter)
 
 		Attachment->SetActorLabel(GetCustomActorLabel(InOwnerCharacter, "Attachment"));
 
-		//Equipment->FinishSpawning()
 		UGameplayStatics::FinishSpawningActor(Attachment, transform);
 
 	}
@@ -35,6 +36,16 @@ void UCActionData::BeginPlay(class ACharacter* InOwnerCharacter)
 			Equipment->OnBeginEquip.AddDynamic(Attachment, &ACAttachment::OnEquip);
 			Equipment->OnUnequip.AddDynamic(Attachment, &ACAttachment::OnUnequip);
 		}
+	}
+
+	if (!!DoActionClass)
+	{
+		DoAction = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACDoAction>(DoActionClass, transform, InOwnerCharacter);
+
+		DoAction->SetDatas(DoActionDatas);
+		DoAction->SetActorLabel(GetCustomActorLabel(InOwnerCharacter, "DoAction"));
+
+		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 	}
 }
 

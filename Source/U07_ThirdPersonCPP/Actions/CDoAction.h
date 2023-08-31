@@ -31,10 +31,10 @@ protected:
 		class ACharacter* OwnerCharacter;
 
 	UPROPERTY(BlueprintReadOnly)
-		class StatusComponent* StatusComp;
+		class UCStateComponent* StateComp;
 
 	UPROPERTY(BlueprintReadOnly)
-		class StateComponent* StateComp;
+		class UCStatusComponent* StatusComp;
 
 protected:
 	TArray<FDoActionData> Datas;

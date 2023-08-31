@@ -57,6 +57,9 @@ public:		// Set Action
 	void SetWarpMode();
 	void SetStormMode();
 
+public:
+	void DoAction();
+
 private:
 	void SetMode(EActionType InNewType);		// 무기를 들고 있을 때 같은 무기를 호출하면 Unarmed로 회귀시켜주는 함수
 	void ChangeType(EActionType InNewType);

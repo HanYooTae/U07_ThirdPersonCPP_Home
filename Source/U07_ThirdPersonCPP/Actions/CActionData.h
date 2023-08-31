@@ -4,11 +4,10 @@
 #include "Engine/DataAsset.h"
 #include "CActionData.generated.h"
 
+//-----------------------------------------------------------------------------
+// Struct - EquipmentData
+//-----------------------------------------------------------------------------
 USTRUCT(BlueprintType)
-
-//-----------------------------------------------------------------------------
-// Struct = EquipmentData
-//-----------------------------------------------------------------------------
 struct FEquipmentData
 {
 	GENERATED_BODY()
@@ -26,15 +25,12 @@ public:
 	UPROPERTY(EditAnywhere)
 		bool bCanMove = true;
 
-	// 캐릭터 회전못하게
-	// bUseControllerRotationYaw = true;
-	// GetCharacterMovement()->bOrientRotationToMovement = false;
 	UPROPERTY(EditAnywhere)
 		bool bPawnControl = true;
 };
 
 //-----------------------------------------------------------------------------
-// Struct = DoActionData
+// Struct - DoActionData
 //-----------------------------------------------------------------------------
 USTRUCT(BlueprintType)
 struct FDoActionData : public FEquipmentData
@@ -45,14 +41,12 @@ public:
 	UPROPERTY(EditAnywhere)
 		float Power = 1.f;
 
-	// 맞았을 때 몇초동안 멈추게 할지
 	UPROPERTY(EditAnywhere)
 		float HitStop;
 
 	UPROPERTY(EditAnywhere)
 		class UParticleSystem* Effect;
 
-	// 파티클의 위치
 	UPROPERTY(EditAnywhere)
 		FTransform EffectTransform;
 
@@ -61,18 +55,20 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Class = DataAsset
+// Class - DataAsset
 //-----------------------------------------------------------------------------
 UCLASS()
 class U07_THIRDPERSONCPP_API UCActionData : public UDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	void BeginPlay(class ACharacter* InOwnerCharacter);
 
 public:
 	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
+	FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }
+	FORCEINLINE class ACDoAction* GetDoAction() { return DoAction; }
 
 private:
 	FString GetCustomActorLabel(class ACharacter* InOwnerCharacter, FString InMiddleName);
