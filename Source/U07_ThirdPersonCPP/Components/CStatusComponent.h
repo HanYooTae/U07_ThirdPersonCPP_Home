@@ -22,6 +22,9 @@ public:
 	FORCEINLINE float GetRunSpeed() { return RunSpeed; }
 
 	FORCEINLINE bool IsCanMove() { return bCanMove; }
+	
+	FORCEINLINE float GetMaxHealth() { return MaxHealth; }
+	FORCEINLINE float GetCurrentHealth() { return CurrentHealth; }
 
 	void SetMove();		// CanMove를 true로 만드는 역할
 	void SetStop();		// CanMove를 false로 만드는 역할
@@ -36,6 +39,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Speed")
 		float RunSpeed = 600.f;
 
+	UPROPERTY(EditAnywhere, Category = "Health")
+		float MaxHealth = 100.f;
+
 private:
 	bool bCanMove = true;
+	float CurrentHealth;
 };
