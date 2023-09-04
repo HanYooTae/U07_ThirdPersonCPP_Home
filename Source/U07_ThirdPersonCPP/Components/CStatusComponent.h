@@ -29,6 +29,10 @@ public:
 	void SetMove();		// CanMove를 true로 만드는 역할
 	void SetStop();		// CanMove를 false로 만드는 역할
 
+	void DecreaseHealth(float InAmount);
+	void IncreaseHealth(float InAmount);
+	FORCEINLINE bool IsDead() { return CurrentHealth <= 0; }
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed")
 		float SneakSpeed = 200.f;

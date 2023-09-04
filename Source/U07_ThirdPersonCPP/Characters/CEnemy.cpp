@@ -2,7 +2,6 @@
 #include "Global.h"
 #include "Components/CActionComponent.h"
 #include "Components/CMontagesComponent.h"
-#include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Widgets/CNameWidget.h"
@@ -43,8 +42,8 @@ ACEnemy::ACEnemy()
 	TSubclassOf<UCNameWidget> nameWidgetClass;
 	CHelpers::GetClass(&nameWidgetClass, "WidgetBlueprint'/Game/Widgets/WB_Name.WB_Name_C'");
 	NameWidget->SetWidgetClass(nameWidgetClass);
-	NameWidget->SetRelativeLocation(FVector(0, 0, 200));
-	NameWidget->SetDrawSize(FVector2D(240, 30));
+	NameWidget->SetRelativeLocation(FVector(0, 0, 220));
+	NameWidget->SetDrawSize(FVector2D(240, 50));
 	NameWidget->SetWidgetSpace(EWidgetSpace::Screen);
 	
 	TSubclassOf<UCHealthWidget> healthWidgetClass;
@@ -64,6 +63,8 @@ void ACEnemy::BeginPlay()
 	GetMesh()->SetMaterial(0, LowerMaterial);
 	GetMesh()->SetMaterial(1, UpperMaterial);
 
+	State->OnStateTypeChanged.AddDynamic(this, &ACEnemy::OnStateTypeChanged);
+
 	Super::BeginPlay();
 
 	NameWidget->InitWidget();
@@ -81,8 +82,47 @@ void ACEnemy::BeginPlay()
 	}
 }
 
+float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+	Causer = DamageCauser;
+
+	Status->DecreaseHealth(DamageValue);
+
+	if (Status->IsDead())
+	{
+		State->SetDeadMode();
+		return DamageValue;
+	}
+
+	State->SetHittedMode();
+
+	return DamageValue;
+}
+
 void ACEnemy::ChangeBodyColor(FLinearColor InColor)
 {
 	LowerMaterial->SetVectorParameterValue("Emissive", InColor);
 	UpperMaterial->SetVectorParameterValue("Emissive", InColor);
+}
+
+void ACEnemy::Hitted()
+{
+	CLog::Print("Hitted");
+}
+
+void ACEnemy::Dead()
+{
+	CLog::Print("Dead");
+}
+
+void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+{
+	switch (InNewType)
+	{
+	case EStateType::Hitted:	Hitted();	 break;
+	case EStateType::Dead:		Dead();		 break;
+	}
 }
