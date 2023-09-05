@@ -22,6 +22,10 @@ public:
 
 public:
 	virtual void ChangeBodyColor(FLinearColor InColor);
+	
+	// Timer에 붙일 함수
+	UFUNCTION()
+		void RestoreColor();
 
 private:
 	void Hitted();
@@ -50,6 +54,10 @@ private:		// Actor Component
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStatusComponent* Status;
+
+private:
+	UPROPERTY(EditAnywhere)
+		float LaunchValue = 25.f;
 
 private:
 	class UMaterialInstanceDynamic* UpperMaterial;

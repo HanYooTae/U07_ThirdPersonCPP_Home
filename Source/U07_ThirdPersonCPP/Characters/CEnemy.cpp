@@ -8,6 +8,7 @@
 #include "Widgets/CHealthWidget.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 ACEnemy::ACEnemy()
 {
@@ -104,18 +105,68 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 void ACEnemy::ChangeBodyColor(FLinearColor InColor)
 {
-	LowerMaterial->SetVectorParameterValue("Emissive", InColor);
-	UpperMaterial->SetVectorParameterValue("Emissive", InColor);
+	if (State->IsHittedMode())
+	{
+		LowerMaterial->SetVectorParameterValue("BodyColor", InColor);
+		UpperMaterial->SetVectorParameterValue("BodyColor", InColor);
+
+		return;
+	}
+}
+
+void ACEnemy::RestoreColor()
+{
+	LowerMaterial->SetVectorParameterValue("BodyColor", FLinearColor::Black);
+	UpperMaterial->SetVectorParameterValue("BodyColor", FLinearColor::Black);
 }
 
 void ACEnemy::Hitted()
 {
-	CLog::Print("Hitted");
+	// Apply Health Widget
+	UCHealthWidget* healthWidget = Cast<UCHealthWidget>(HealthWidget->GetUserWidgetObject());
+	if (!!healthWidget)
+	{
+		healthWidget->UpdateHealth(Status->GetCurrentHealth(), Status->GetMaxHealth());
+	}
+
+	// Play Hitted Montage
+	Montages->PlayHitted();
+
+	// Look At Attacker
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	FRotator rotation = FRotator(0, UKismetMathLibrary::FindLookAtRotation(start, target).Yaw, 0);
+	SetActorRotation(rotation);
+
+	// Hit Back
+	FVector direction = (start - target).GetSafeNormal();
+	LaunchCharacter(direction * LaunchValue * DamageValue, true, false);
+
+	// Change Hit Color
+	ChangeBodyColor(FLinearColor::Red);
+	UKismetSystemLibrary::K2_SetTimer(this, "RestoreColor", 0.5f, false);
 }
 
 void ACEnemy::Dead()
 {
-	CLog::Print("Dead");
+	// Widget Visibility Disable
+	NameWidget->SetVisibility(false);
+	HealthWidget->SetVisibility(false);
+
+	// Ragdoll
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->GlobalAnimRateScale = 0.f;
+
+	// Add Force
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	FVector direction = (start - target).GetSafeNormal();
+	FVector force = direction * LaunchValue * DamageValue;
+	GetMesh()->AddForceAtLocation(force, start);
+
+	//Todo. Destroy All(Attachment, Equipment, DoAction...)
 }
 
 void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
