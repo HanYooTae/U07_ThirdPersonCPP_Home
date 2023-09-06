@@ -212,9 +212,9 @@ void ACPlayer::Begin_BackStep()
 
 void ACPlayer::End_Roll()
 {
-	CheckNull(Action->GetCurrentData());
+	CheckNull(Action->GetCurrentDataAsset());
 
-	if (Action->GetCurrentData()->EquipmentData.bPawnControl == true)
+	if (Action->GetCurrentDataAsset()->EquipmentData.bPawnControl == true)
 	{
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -225,9 +225,9 @@ void ACPlayer::End_Roll()
 
 void ACPlayer::End_BackStep()
 {
-	CheckNull(Action->GetCurrentData());
+	CheckNull(Action->GetCurrentDataAsset());
 
-	if (Action->GetCurrentData()->EquipmentData.bPawnControl == false)
+	if (Action->GetCurrentDataAsset()->EquipmentData.bPawnControl == false)
 	{
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
