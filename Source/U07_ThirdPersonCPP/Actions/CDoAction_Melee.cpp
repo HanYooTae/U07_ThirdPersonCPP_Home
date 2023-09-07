@@ -76,6 +76,23 @@ void ACDoAction_Melee::OnBeginOverlap(ACharacter* InAttacker, AActor* InCauser, 
 		UKismetSystemLibrary::K2_SetTimer(this, "RestoreTimeDilation", 2e-2f * hitStop, false);
 	}
 
+	// Camera Shake
+	TSubclassOf<UCameraShake> shakeClass = Datas[ComboCount].ShakeClass;
+	if (!!shakeClass)
+	{
+		APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		CheckNull(controller);
+		controller->PlayerCameraManager->PlayCameraShake(shakeClass);
+	}
+
+	// Play Particles
+	UParticleSystem* effect = Datas[ComboCount].Effect;
+	CheckNull(effect);
+	FTransform transform = Datas[ComboCount].EffectTransform;
+	transform.AddToTranslation(InOtherCharacter->GetActorLocation());
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), effect, transform);
+
 	// Take Damage
 	FDamageEvent damageEvent;
 	InOtherCharacter->TakeDamage(Datas[ComboCount].Power, damageEvent, InAttacker->GetController(), InCauser);

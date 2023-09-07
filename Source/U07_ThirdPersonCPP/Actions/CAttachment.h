@@ -22,6 +22,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void AttachTo(FName InSocketName);
 
+	UFUNCTION(BlueprintCallable)
+		void AttachToComp(class USceneComponent* InComponent, FName InSocketName);
+
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void OnEquip();
@@ -35,7 +38,9 @@ public:
 
 	UFUNCTION()
 		void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	UFUNCTION()
+		void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	UPROPERTY(BlueprintAssignable)

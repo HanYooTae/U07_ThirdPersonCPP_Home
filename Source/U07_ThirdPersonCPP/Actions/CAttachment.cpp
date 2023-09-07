@@ -36,6 +36,16 @@ void ACAttachment::AttachTo(FName InSocketName)
 	);
 }
 
+void ACAttachment::AttachToComp(USceneComponent* InComponent, FName InSocketName)
+{
+	InComponent->AttachToComponent
+	(
+		OwnerCharacter->GetMesh(),
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		InSocketName
+	);
+}
+
 void ACAttachment::OnCollisions()
 {
 	for (const auto& collision : Collisions)
@@ -63,9 +73,8 @@ void ACAttachment::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 void ACAttachment::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	CheckTrue(OwnerCharacter == OtherActor);
-
 	ACharacter* otherCharacter = Cast <ACharacter>(OtherActor);
+	CheckTrue(OwnerCharacter == OtherActor);
 
 	if (OnEndOverlap.IsBound())
 	{
