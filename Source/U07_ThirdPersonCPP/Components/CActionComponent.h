@@ -62,6 +62,7 @@ public:		// Set Action
 
 public:
 	void DoAction();
+	void DoAim(bool InPressed);
 
 	void OffAllCollisions();	// 죽었을 때 무기 충돌체 Off
 

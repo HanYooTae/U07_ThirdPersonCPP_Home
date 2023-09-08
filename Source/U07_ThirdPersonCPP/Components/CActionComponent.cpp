@@ -82,6 +82,21 @@ void UCActionComponent::DoAction()
 	}
 }
 
+void UCActionComponent::DoAim(bool InPressed)
+{
+	CheckTrue(IsUnarmedMode());
+
+	if (!!GetCurrentData())
+	{
+		ACDoAction* doAction = GetCurrentData()->GetDoAction();
+		if (!!doAction)
+		{
+			InPressed ? doAction->OnAim() : doAction->OffAim();
+		}
+
+	}
+}
+
 void UCActionComponent::OffAllCollisions()
 {
 	for (const auto& data : Datas)
