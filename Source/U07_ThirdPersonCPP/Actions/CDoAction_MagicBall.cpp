@@ -4,6 +4,7 @@
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
 #include "CAim.h"
+#include "CMagicBall.h"
 
 void ACDoAction_MagicBall::BeginPlay()
 {
@@ -23,6 +24,12 @@ void ACDoAction_MagicBall::Tick(float DeltaTime)
 
 void ACDoAction_MagicBall::DoAction()
 {
+	CheckFalse(Datas.Num() > 0);
+
+	// Player 전용(Zoom을 하지 않으면 MagicBall사용 불가)
+	if (Aim->IsAvailable())
+		CheckFalse(Aim->IsZooming());
+
 	CheckFalse(StateComp->IsIdleMode());
 	StateComp->SetActionMode();
 
@@ -33,7 +40,29 @@ void ACDoAction_MagicBall::DoAction()
 
 void ACDoAction_MagicBall::Begin_DoAction()
 {
-	// Todo. Spawn Projectile
+	// Spawn Projectile
+	CheckNull(Datas[0].ProjectileClass);
+
+	FVector handSocketLocation = OwnerCharacter->GetMesh()->GetSocketLocation("hand_r");
+	//OwnerCharacter->GetController()->GetPlayerViewPoint()
+	
+	FTransform transform = Datas[0].EffectTransform;
+	transform.AddToTranslation(handSocketLocation);
+
+	transform.SetRotation(FQuat(OwnerCharacter->GetControlRotation()));		// == OwnerCharacter->GetActorForwardVector()->Rotation()
+
+	ACMagicBall* magicBall = GetWorld()->SpawnActorDeferred<ACMagicBall>
+		(
+			Datas[0].ProjectileClass,
+			transform,
+			OwnerCharacter,
+			OwnerCharacter,
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
+
+	// Todo. 뭔가 넣을 예정
+
+	magicBall->FinishSpawning(transform);
 }
 
 void ACDoAction_MagicBall::End_DoAction()

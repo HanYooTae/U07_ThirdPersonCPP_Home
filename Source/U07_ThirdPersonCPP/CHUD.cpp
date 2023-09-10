@@ -34,6 +34,9 @@ void ACHUD::DrawHUD()
 
 	DrawText(typeStr, FLinearColor::Red, 10, Canvas->ClipY - 50, nullptr, 1.5f);
 
+	// Draw Aim
+	CheckFalse(bVisibleAim);
+	
 	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
 
 	const FVector2D CrosshairDrawPosition((Center.X - (CrosshairTex->GetSurfaceWidth() * 0.5)),
