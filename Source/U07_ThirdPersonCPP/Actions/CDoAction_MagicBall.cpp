@@ -12,6 +12,9 @@ void ACDoAction_MagicBall::BeginPlay()
 
 	Aim = NewObject<UCAim>();
 	Aim->BeginPlay(OwnerCharacter);
+
+	ActionComp = CHelpers::GetComponent<UCActionComponent>(OwnerCharacter);
+	ActionComp->OnActionTypeChanged.AddDynamic(this, &ACDoAction_MagicBall::AbortByTypeChanged);
 }
 
 
@@ -43,13 +46,20 @@ void ACDoAction_MagicBall::Begin_DoAction()
 	// Spawn Projectile
 	CheckNull(Datas[0].ProjectileClass);
 
+	// 카메라의 위치, 회전
+	FVector location;
+	FRotator rotation;
+	OwnerCharacter->GetController()->GetPlayerViewPoint(location, rotation);
+
 	FVector handSocketLocation = OwnerCharacter->GetMesh()->GetSocketLocation("hand_r");
-	//OwnerCharacter->GetController()->GetPlayerViewPoint()
+	FVector cameraDirection = rotation.Vector();
+
+	location += cameraDirection * ((handSocketLocation - location) | cameraDirection);
 	
 	FTransform transform = Datas[0].EffectTransform;
-	transform.AddToTranslation(handSocketLocation);
+	transform.AddToTranslation(location);
 
-	transform.SetRotation(FQuat(OwnerCharacter->GetControlRotation()));		// == OwnerCharacter->GetActorForwardVector()->Rotation()
+	transform.SetRotation(FQuat(OwnerCharacter->GetControlRotation()));		// != OwnerCharacter->GetActorForwardVector()->Rotation()
 
 	ACMagicBall* magicBall = GetWorld()->SpawnActorDeferred<ACMagicBall>
 		(
@@ -60,7 +70,8 @@ void ACDoAction_MagicBall::Begin_DoAction()
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 
-	// Todo. 뭔가 넣을 예정
+	// 충돌처리
+	magicBall->OnBeginOverlap.AddDynamic(this, &ACDoAction_MagicBall::OnMagicBallBeginOverlap);
 
 	magicBall->FinishSpawning(transform);
 }
@@ -80,5 +91,24 @@ void ACDoAction_MagicBall::OnAim()
 void ACDoAction_MagicBall::OffAim()
 {
 	CheckNull(Aim);
+	Aim->Off();
+}
+
+void ACDoAction_MagicBall::OnMagicBallBeginOverlap(FHitResult hitResult)
+{
+	FDamageEvent damageEvent;
+	hitResult.GetActor()->TakeDamage
+	(
+		Datas[0].Power,
+		damageEvent,
+		OwnerCharacter->GetController(),
+		this
+	);
+}
+
+void ACDoAction_MagicBall::AbortByTypeChanged(EActionType InPrevType, EActionType InNewType)
+{
+	CheckFalse(Aim->IsAvailable());
+	CheckFalse(Aim->IsZooming())
 	Aim->Off();
 }
