@@ -39,6 +39,8 @@ private:	// Action Event
 	void OnOneHand();
 	void OnTwoHand();
 	void OnMagicBall();
+	void OnWarp();
+	void OnStorm();
 
 	void OnAction();
 	void OnAim();
