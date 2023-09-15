@@ -22,6 +22,7 @@ protected:
 public:
 	FORCEINLINE void SetData(const FEquipmentData& InData) { Data = InData; }
 	FORCEINLINE void SetColor(const FLinearColor& InColor) { Color = InColor; }
+	FORCEINLINE const bool* IsEquippedThis() { return &bEquippedThis; }
 
 public:
 	// Play Draw Montage
@@ -62,4 +63,6 @@ public:
 private:
 	FEquipmentData Data;
 	FLinearColor Color;
+
+	bool bEquippedThis;		// 어떤 무기가 장착이 되어있는지 아닌지 판단하는 변수
 };
