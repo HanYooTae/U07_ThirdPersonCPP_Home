@@ -40,7 +40,7 @@ void ACDoAction_Warp::Tick(float DeltaTime)
 	{
 		// 마우스 커서가 닿을 수 있는 지점이라면
 		WarpPoint->SetVisibility(true);
-		WarpPoint->SetWorldLocationAndRotation(location + FVector(0, 0, 120), FQuat(rotation));
+		WarpPoint->SetWorldLocationAndRotation(location + WarpPoint->GetUpVector() * 120.f, FQuat(rotation));
 	}
 	else
 	{
