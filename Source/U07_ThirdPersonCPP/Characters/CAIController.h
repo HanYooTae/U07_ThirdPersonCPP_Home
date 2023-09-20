@@ -21,5 +21,13 @@ public:
 	virtual void Tick(float DeltaTime) override;	// draw debug 표시 (' -> 4 안눌러도 되게)
 
 private:
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCBehaviorComponent* Behavior;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UAIPerceptionComponent* Perception;
+
+private:
 	class ACEnemy_AI* PossessedEnemy;
+	class UAISenseConfig_Sight* Sight;
 };
