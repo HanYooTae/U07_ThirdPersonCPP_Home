@@ -21,6 +21,10 @@ public:
 	virtual void Tick(float DeltaTime) override;	// draw debug 표시 (' -> 4 안눌러도 되게)
 
 private:
+	UFUNCTION()
+		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+
+private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCBehaviorComponent* Behavior;
 

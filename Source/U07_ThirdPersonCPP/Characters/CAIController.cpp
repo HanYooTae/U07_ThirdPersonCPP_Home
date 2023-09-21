@@ -6,6 +6,7 @@
 #include "CEnemy_AI.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "CPlayer.h"
 
 ACAIController::ACAIController()
 {
@@ -44,12 +45,18 @@ void ACAIController::OnPossess(APawn* InPawn)
 	// BlackboardComponent를 BehaviorComponent로 넘겨줘야 값을 읽고 쓸 수 있음
 	Behavior->SetBlackboard(Blackboard);
 
+	SetGenericTeamId(PossessedEnemy->GetTeamID());
+
 	RunBehaviorTree(PossessedEnemy->GetBehaviorTree());
+
+	Perception->OnPerceptionUpdated.AddDynamic(this, &ACAIController::OnPerceptionUpdated);
 }
 
 void ACAIController::OnUnPossess()
 {
 	Super::OnUnPossess();
+
+	Perception->OnPerceptionUpdated.Clear();
 }
 
 void ACAIController::BeginPlay()
@@ -60,4 +67,24 @@ void ACAIController::BeginPlay()
 void ACAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+// 감지가 풀린 Actor들도 가져오기 때문에 파라미터 사용안했음
+// 감지가 되고 있는 Actor들만 사용하려고 함
+void ACAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+{
+	TArray<AActor*> actors;
+	// 현재 감지가 되고 있는 Actor를 검출하는 함수
+	Perception->GetCurrentlyPerceivedActors(nullptr, actors);
+
+	ACPlayer* player = nullptr;
+	for (const auto& perceivedactor : actors)
+	{
+		player = Cast<ACPlayer>(perceivedactor);
+
+		if (!!player)
+			break;
+	}
+
+	Blackboard->SetValueAsObject("PlayerKey", player);
 }
