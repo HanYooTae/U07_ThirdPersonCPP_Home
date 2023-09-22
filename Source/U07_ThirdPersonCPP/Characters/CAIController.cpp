@@ -69,6 +69,11 @@ void ACAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+float ACAIController::GetSightRadius()
+{
+	return Sight->SightRadius;
+}
+
 // 감지가 풀린 Actor들도 가져오기 때문에 파라미터 사용안했음
 // 감지가 되고 있는 Actor들만 사용하려고 함
 void ACAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)

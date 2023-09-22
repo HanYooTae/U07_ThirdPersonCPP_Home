@@ -4,6 +4,11 @@
 #include "Components/ActorComponent.h"
 #include "CStatusComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EWalkSpeedType : uint8
+{
+	Sneak, Walk, Run, Max
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class U07_THIRDPERSONCPP_API UCStatusComponent : public UActorComponent
@@ -17,9 +22,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	FORCEINLINE float GetSneakSpeed() { return SneakSpeed; }
-	FORCEINLINE float GetWalkSpeed() { return WalkSpeed; }
-	FORCEINLINE float GetRunSpeed() { return RunSpeed; }
+	FORCEINLINE float GetSneakSpeed() { return WalkSpeed[(int8)EWalkSpeedType::Sneak]; }
+	FORCEINLINE float GetWalkSpeed() { return WalkSpeed[(int8)EWalkSpeedType::Walk]; }
+	FORCEINLINE float GetRunSpeed() { return WalkSpeed[(int8)EWalkSpeedType::Run]; }
 
 	FORCEINLINE bool IsCanMove() { return bCanMove; }
 	
@@ -28,6 +33,7 @@ public:
 
 	void SetMove();		// CanMove를 true로 만드는 역할
 	void SetStop();		// CanMove를 false로 만드는 역할
+	void ChangeMoveSpeed(EWalkSpeedType InType);
 
 	void DecreaseHealth(float InAmount);
 	void IncreaseHealth(float InAmount);
@@ -35,13 +41,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed")
-		float SneakSpeed = 200.f;
-
-	UPROPERTY(EditAnywhere, Category = "Speed")
-		float WalkSpeed = 400.f;
-
-	UPROPERTY(EditAnywhere, Category = "Speed")
-		float RunSpeed = 600.f;
+		float WalkSpeed[(int8)EWalkSpeedType::Max]{ 200.f, 400.f, 600.f };
 
 	UPROPERTY(EditAnywhere, Category = "Health")
 		float MaxHealth = 100.f;

@@ -20,6 +20,10 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;	// draw debug 표시 (' -> 4 안눌러도 되게)
 
+public:
+	float GetSightRadius();
+	FORCEINLINE float GetBehaviorRange() { return BehaviorRange; }
+
 private:
 	UFUNCTION()
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
@@ -30,6 +34,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UAIPerceptionComponent* Perception;
+
+	UPROPERTY(EditAnywhere)
+		float BehaviorRange = 150.f;
 
 private:
 	class ACEnemy_AI* PossessedEnemy;
