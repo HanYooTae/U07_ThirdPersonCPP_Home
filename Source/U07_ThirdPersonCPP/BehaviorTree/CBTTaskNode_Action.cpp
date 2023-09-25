@@ -36,7 +36,7 @@ void UCBTTaskNode_Action::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// 상태가 Idle && 2초가 경과했다면 성공 리턴
+	// 상태가 Idle && n초가 경과했다면 성공 리턴
 	AAIController* controller = OwnerComp.GetAIOwner();
 	CheckNull(controller);
 

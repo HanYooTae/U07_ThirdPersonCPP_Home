@@ -17,8 +17,20 @@ ACPatrolPath::ACPatrolPath()
 	Text->SetTextRenderColor(FColor::Red);
 }
 
+void ACPatrolPath::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	Spline->SetClosedLoop(bClosedLoop);
+	Text->SetText(GetActorLabel());
+
+	Spline->ScaleVisualizationWidth = 20;
+	Spline->bShouldVisualizeScale = true;		// true·Î ¹Ù²ãÁà¾ß ScaleVisualizationWidth ¿É¼ÇÀÌ Á¤»óÀû¿ëµÊ
+}
+
 void ACPatrolPath::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Text->SetVisibility(false);
 }
