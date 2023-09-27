@@ -21,6 +21,7 @@ public:
 
 private:
 	bool GetCursorLocationAndRotation(FVector& OutLocation, FRotator& OutRotator);
+	bool IsPlayerControlled();
 
 private:
 	UStaticMeshComponent* WarpPoint;

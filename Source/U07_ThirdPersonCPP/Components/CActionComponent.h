@@ -73,6 +73,9 @@ public:
 
 	void OffAllCollisions();	// 죽었을 때 무기 충돌체 Off
 
+	void AbortByDamaged();
+	void End_Dead();
+
 private:
 	void SetMode(EActionType InNewType);		// 무기를 들고 있을 때 같은 무기를 호출하면 Unarmed로 회귀시켜주는 함수
 	void ChangeType(EActionType InNewType);

@@ -143,3 +143,31 @@ void UCActionComponent::ChangeType(EActionType InNewType)
 	if (OnActionTypeChanged.IsBound())
 		OnActionTypeChanged.Broadcast(prev, InNewType);
 }
+
+void UCActionComponent::AbortByDamaged()
+{
+	CheckNull(GetCurrentData());
+	CheckTrue(IsUnarmedMode());
+
+	// 데미지를 받았을 때 강제로 Equipment를 장착하게 만들어줌
+	GetCurrentData()->GetEquipment()->Begin_Equip();
+	GetCurrentData()->GetEquipment()->End_Equip();
+
+	// 가상함수 : 아직 정의안했음
+	GetCurrentData()->GetDoAction()->Abort();
+}
+
+void UCActionComponent::End_Dead()
+{
+	for (int32 i = 0; i < (int32)EActionType::Max; i++)
+	{
+		if (!!Datas[i] && !!Datas[i]->GetEquipment())
+			Datas[i]->GetEquipment()->Destroy();
+
+		if (!!Datas[i] && !!Datas[i]->GetAttachment())
+			Datas[i]->GetAttachment()->Destroy();
+
+		if (!!Datas[i] && !!Datas[i]->GetDoAction())
+			Datas[i]->GetDoAction()->Destroy();
+	}
+}

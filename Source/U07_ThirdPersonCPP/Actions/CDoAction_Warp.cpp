@@ -3,8 +3,11 @@
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CBehaviorComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Global.h"
 #include "Actions/CAttachment.h"
+#include "AIController.h"
 
 void ACDoAction_Warp::BeginPlay()
 {
@@ -30,6 +33,7 @@ void ACDoAction_Warp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	CheckFalse(IsPlayerControlled());
 	// Warp가 장착이 되어있을 때만 동작
 	CheckFalse(*bEquippedThis);
 
@@ -55,10 +59,31 @@ void ACDoAction_Warp::DoAction()
 
 	CheckFalse(StateComp->IsIdleMode());
 
-	FRotator temp;
+	// PlayerController
+	if (IsPlayerControlled())
+	{
+		FRotator temp;
 
-	// 마우스 커서가 닿을 수 없는 지점이라면
-	CheckFalse(GetCursorLocationAndRotation(WarpLocation, temp));
+		// 마우스 커서가 닿을 수 없는 지점이라면 false 리턴, 아니라면 true
+		CheckFalse(GetCursorLocationAndRotation(WarpLocation, temp));
+	}
+
+	// AIController
+	else
+	{
+		AAIController* controller = OwnerCharacter->GetController<AAIController>();
+		if (!!controller)
+		{
+			UCBehaviorComponent* behaviorComp = CHelpers::GetComponent<UCBehaviorComponent>(controller);
+			if (!!behaviorComp)
+			{
+				WarpLocation = behaviorComp->GetLocationKey();
+			}
+		}
+	}
+
+	// 캡슐 충돌체 절반 높이만큼 올려줘야 함(땅 속에 끼일 수가 있음)
+	WarpLocation.Z += OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
 	StateComp->SetActionMode();
 	Datas[0].bCanMove ? StatusComp->SetMove() : StatusComp->SetStop();
@@ -119,4 +144,10 @@ bool ACDoAction_Warp::GetCursorLocationAndRotation(FVector& OutLocation, FRotato
 	}
 
 	return false;
+}
+
+bool ACDoAction_Warp::IsPlayerControlled()
+{
+
+	return (OwnerCharacter->GetController()->GetClass() == APlayerController::StaticClass());
 }

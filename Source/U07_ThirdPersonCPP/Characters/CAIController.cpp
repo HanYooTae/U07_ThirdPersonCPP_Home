@@ -12,7 +12,7 @@ ACAIController::ACAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Todo. (0)Use Blackboard, (1)RunBT, (2)PerceptionComp
+	// (0)Use Blackboard, (1)RunBT, (2)PerceptionComp
 	CHelpers::CreateActorComponent(this, &Blackboard, "Blackboard");
 	CHelpers::CreateActorComponent(this, &Behavior, "Behavior");
 	CHelpers::CreateActorComponent(this, &Perception, "Perception");

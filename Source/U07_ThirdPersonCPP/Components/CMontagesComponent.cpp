@@ -56,6 +56,11 @@ void UCMontagesComponent::PlayHitted()
 	PlayAnimMontage(EStateType::Hitted);
 }
 
+void UCMontagesComponent::PlayDead()
+{
+	PlayAnimMontage(EStateType::Dead);
+}
+
 void UCMontagesComponent::PlayAnimMontage(EStateType InStateType)
 {
 	ACharacter* ownerCharacter = Cast<ACharacter>(GetOwner());

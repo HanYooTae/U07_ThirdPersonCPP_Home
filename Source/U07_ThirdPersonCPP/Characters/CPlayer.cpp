@@ -96,6 +96,27 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 }
 
+float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+	Causer = DamageCauser;
+
+	Action->AbortByDamaged();
+	Status->DecreaseHealth(DamageValue);
+
+	if (Status->IsDead())
+	{
+		State->SetDeadMode();
+		return DamageValue;
+	}
+
+	State->SetHittedMode();
+
+	return DamageValue;
+}
+
 void ACPlayer::OnMoveForward(float InAxis)
 {
 	CheckTrue(FMath::IsNearlyZero(InAxis));
@@ -148,7 +169,7 @@ void ACPlayer::OnWalk()
 void ACPlayer::OffWalk()
 {
 	//GetCharacterMovement()->MaxWalkSpeed = Status->GetRunSpeed();
-	Status->ChangeMoveSpeed(EWalkSpeedType::Walk);
+	Status->ChangeMoveSpeed(EWalkSpeedType::Run);
 }
 
 void ACPlayer::OnEvade()
@@ -242,6 +263,36 @@ void ACPlayer::Begin_BackStep()
 	Montages->PlayBackStep();
 }
 
+void ACPlayer::Hitted()
+{
+	// Play Hitted Montage
+	Montages->PlayHitted();
+}
+
+void ACPlayer::Dead()
+{
+	// Play Dead Montage
+	Montages->PlayDead();
+
+	// Off All Collisions
+	Action->OffAllCollisions();
+
+	// Destroy All(Attachment, Equipment, DoAction...)
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
+
+	// Todo. 충돌체 Spectator로 변경
+	// 플레이어가 사망하면 enemy wait or patrol
+}
+
+void ACPlayer::End_Dead()
+{
+	Action->End_Dead();
+
+	// Todo. 플레이어가 죽은 후에 동작할 event
+	CLog::Log("You Died");
+	CLog::Print("You Died");
+}
+
 void ACPlayer::End_Roll()
 {
 	CheckNull(Action->GetCurrentDataAsset());
@@ -275,6 +326,8 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	{
 	case EStateType::Roll:		Begin_Roll();		break;
 	case EStateType::BackStep:  Begin_BackStep();	break;
+	case EStateType::Hitted:	Hitted();			break;
+	case EStateType::Dead:		Dead();				break;
 	}
 }
 

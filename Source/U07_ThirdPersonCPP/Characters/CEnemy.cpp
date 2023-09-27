@@ -81,6 +81,9 @@ void ACEnemy::BeginPlay()
 	{
 		healthWidget->UpdateHealth(Status->GetCurrentHealth(), Status->GetMaxHealth());
 	}
+
+	NameWidget->SetVisibility(bVisibleNameWidget);
+	//nameWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -90,6 +93,7 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 	Causer = DamageCauser;
 
+	Action->AbortByDamaged();
 	Status->DecreaseHealth(DamageValue);
 
 	if (Status->IsDead())
@@ -172,7 +176,15 @@ void ACEnemy::Dead()
 	// Off All Collisions
 	Action->OffAllCollisions();
 
-	//Todo. Destroy All(Attachment, Equipment, DoAction...)
+	// Destroy All(Attachment, Equipment, DoAction...)
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
+}
+
+void ACEnemy::End_Dead()
+{
+	Action->End_Dead();
+
+	Destroy();
 }
 
 void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)

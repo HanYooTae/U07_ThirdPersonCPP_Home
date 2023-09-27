@@ -31,6 +31,9 @@ private:
 	void Hitted();
 	void Dead();
 
+	UFUNCTION()
+		void End_Dead();
+
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
@@ -59,6 +62,9 @@ private:		// Actor Component
 private:
 	UPROPERTY(EditAnywhere)
 		float LaunchValue = 25.f;
+
+	UPROPERTY(EditAnywhere)
+		bool bVisibleNameWidget;
 
 private:
 	class UMaterialInstanceDynamic* UpperMaterial;
