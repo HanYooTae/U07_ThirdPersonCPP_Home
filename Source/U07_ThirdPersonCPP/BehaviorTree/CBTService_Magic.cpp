@@ -1,6 +1,7 @@
 #include "CBTService_Magic.h"
 #include "Components/CBehaviorComponent.h"
 #include "Components/CStateComponent.h"
+#include "Components/CPatrolComponent.h"
 #include "Characters/CAIController.h"
 #include "Characters/CEnemy_AI.h"
 #include "Characters/CPlayer.h"
@@ -27,6 +28,9 @@ void UCBTService_Magic::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	UCStateComponent* stateComp = CHelpers::GetComponent<UCStateComponent>(enemy);
 	CheckNull(stateComp);
 
+	UCPatrolComponent* patrolComp = CHelpers::GetComponent<UCPatrolComponent>(enemy);
+	CheckNull(patrolComp);
+
 	if (stateComp->IsHittedMode())
 	{
 		behaviorComp->SetHittedMode();
@@ -45,6 +49,24 @@ void UCBTService_Magic::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 
 	// Perceived Player
+	UCStateComponent* playerStateComp = CHelpers::GetComponent<UCStateComponent>(player);
+	if (!!playerStateComp)
+	{
+		// Player is Dead
+		if (playerStateComp->IsDeadMode())
+		{
+			if (!!patrolComp->IsPathValid())
+			{
+				behaviorComp->SetPatrolMode();
+				return;
+			}
+
+			behaviorComp->SetWaitMode();
+			return;
+		}
+	}
+
+	// -> Get Distance to Player
 	float distance = enemy->GetDistanceTo(player);
 	
 	// yaw»∏¿¸∏∏ Ω√≈¥

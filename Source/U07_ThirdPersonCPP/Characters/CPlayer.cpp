@@ -8,6 +8,7 @@
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Actions/CActionData.h"
 
 ACPlayer::ACPlayer()
@@ -271,17 +272,25 @@ void ACPlayer::Hitted()
 
 void ACPlayer::Dead()
 {
+	// 이미 죽어있다면 return
+	CheckFalse(State->IsDeadMode());
+
+	// Disable Input
+	//GetController<APlayerController>();
+	APlayerController* controller = GetWorld()->GetFirstPlayerController();
+	CheckNull(controller);
+
+	DisableInput(controller);
+
 	// Play Dead Montage
 	Montages->PlayDead();
 
-	// Off All Collisions
+	// Off All Collisions, 충돌체 Spectator로 변경
 	Action->OffAllCollisions();
+	GetCapsuleComponent()->SetCollisionProfileName("Spectator");
 
 	// Destroy All(Attachment, Equipment, DoAction...)
 	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
-
-	// Todo. 충돌체 Spectator로 변경
-	// 플레이어가 사망하면 enemy wait or patrol
 }
 
 void ACPlayer::End_Dead()

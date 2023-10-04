@@ -12,12 +12,11 @@ UCBTService_Melee::UCBTService_Melee()
 	NodeName = "Melee";
 }
 
+// 플레이어가 감지되었을 때, 안되었을 때
+// 감지가 되었을 때 거리에 따라서 BehaviorComp->SetOOOOMode
 void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
-
-	// 플레이어가 감지되었을 때, 안되었을 때
-	// 감지가 되었을 때 거리에 따라서 BehaviorComp->SetOOOOMode
 
 	// BehaviorTree의 Owner는 Controller
 	ACAIController* controller = Cast<ACAIController>(OwnerComp.GetOwner());
@@ -58,6 +57,24 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 
 	// Perceived Player
+	UCStateComponent* playerStateComp = CHelpers::GetComponent<UCStateComponent>(player);
+	if (!!playerStateComp)
+	{
+		// Player is Dead
+		if (playerStateComp->IsDeadMode())
+		{
+			if (!!patrolComp->IsPathValid())
+			{
+				behaviorComp->SetPatrolMode();
+				return;
+			}
+
+			behaviorComp->SetWaitMode();
+			return;
+		}
+	}
+
+	// -> Get Distance to Player
 	float distance = enemy->GetDistanceTo(player);
 
 	//-> Is in Attack Range (150)
