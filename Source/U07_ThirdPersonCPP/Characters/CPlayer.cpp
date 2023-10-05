@@ -10,6 +10,7 @@
 #include "Components/CActionComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Actions/CActionData.h"
+#include "Widgets/CPlayerHealthWidget.h"
 
 ACPlayer::ACPlayer()
 {
@@ -50,18 +51,26 @@ ACPlayer::ACPlayer()
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	// Get Widget Class Asset
+	CHelpers::GetClass<UCPlayerHealthWidget>(&HealthWidgetClass, "WidgetBlueprint'/Game/Widgets/WB_PlayerHealth.WB_PlayerHealth_C'");
 }
 
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Create & Set Dynamic Material
 	BodyMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), nullptr);
 	GetMesh()->SetMaterial(0, BodyMaterial);
 
+	// State Type Changed Event
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);
-
 	Action->SetUnarmedMode();
+
+	// Create Widgets
+	HealthWidget = Cast<UCPlayerHealthWidget>(CreateWidget(GetController<APlayerController>(), HealthWidgetClass));
+	CheckNull(HealthWidget);
+	HealthWidget->AddToViewport();
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -106,6 +115,7 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 
 	Action->AbortByDamaged();
 	Status->DecreaseHealth(DamageValue);
+	HealthWidget->UpdateHealth();
 
 	if (Status->IsDead())
 	{
