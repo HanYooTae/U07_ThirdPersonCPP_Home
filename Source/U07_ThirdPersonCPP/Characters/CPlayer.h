@@ -26,6 +26,7 @@ public:
 public:
 	void ChangeBodyColor(FLinearColor InColor);
 	virtual FGenericTeamId GetGenericTeamId() const override;
+	FORCEINLINE class UCSelectActionWidget_Group* GetSelectActionWidget() { return SelectActionWidget; }
 
 private:	// Axis Event
 	void OnMoveForward(float InAxis);
@@ -48,6 +49,9 @@ private:	// Action Event
 	void OnAction();
 	void OnAim();
 	void OffAim();
+
+	void OnSelectAction();
+	void OffSelectAction();
 
 private:
 	void Begin_Roll();
@@ -97,6 +101,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 		TSubclassOf<class UCPlayerHealthWidget> HealthWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+		TSubclassOf<class UCSelectActionWidget_Group> SelectActionWidgetClass;
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 
@@ -107,4 +114,5 @@ private:
 	float DamageValue;
 
 	class UCPlayerHealthWidget* HealthWidget;
+	class UCSelectActionWidget_Group* SelectActionWidget;
 };
