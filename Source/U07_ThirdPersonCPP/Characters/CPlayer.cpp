@@ -12,6 +12,7 @@
 #include "Actions/CActionData.h"
 #include "Widgets/CPlayerHealthWidget.h"
 #include "Widgets/CSelectActionWidget_Group.h"
+#include "Widgets/CSelectActionWidget_Icon.h"
 
 ACPlayer::ACPlayer()
 {
@@ -78,6 +79,14 @@ void ACPlayer::BeginPlay()
 	CheckNull(SelectActionWidget);
 	SelectActionWidget->AddToViewport();
 	SelectActionWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	// Bind SelectAction Widget Event
+	SelectActionWidget->GetChildWidget("Icon1")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnFist);
+	SelectActionWidget->GetChildWidget("Icon2")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnOneHand);
+	SelectActionWidget->GetChildWidget("Icon3")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnTwoHand);
+	SelectActionWidget->GetChildWidget("Icon4")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnMagicBall);
+	SelectActionWidget->GetChildWidget("Icon5")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnWarp);
+	SelectActionWidget->GetChildWidget("Icon6")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnStorm);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -277,7 +286,6 @@ void ACPlayer::OnSelectAction()
 
 void ACPlayer::OffSelectAction()
 {
-
 	SelectActionWidget->SetVisibility(ESlateVisibility::Hidden);
 	GetController<APlayerController>()->bShowMouseCursor = false;
 	GetController<APlayerController>()->SetInputMode(FInputModeGameOnly());

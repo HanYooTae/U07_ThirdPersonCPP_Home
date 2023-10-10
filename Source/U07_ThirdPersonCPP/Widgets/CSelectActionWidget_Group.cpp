@@ -20,11 +20,30 @@ void UCSelectActionWidget_Group::NativeConstruct()
 		if (!!iconWidget)
 			IconWidgets.Add(child->GetName(), iconWidget);
 	}
+
+	// Set Images to IconWidget ImageButton
+	for (int32 i = 0; i < IconWidgets.Num(); i++)
+	{
+		FString key = "Icon";
+		key.Append(FString::FromInt(i + 1));
+
+		IconWidgets[key]->SetTextureToImageButton(Images[i]);
+	}
 }
 
 void UCSelectActionWidget_Group::Pressed(FString InKey)
 {
-	CLog::Print(InKey + " is Pressed");
+	if (IconWidgets[InKey]->OnImageButtonPressed.IsBound())
+		IconWidgets[InKey]->OnImageButtonPressed.Broadcast();
+
+	SetVisibility(ESlateVisibility::Hidden);
+	APlayerController* controller = Cast<APlayerController>(GetOwningPlayer());
+	CheckNull(controller);
+
+	controller->bShowMouseCursor = false;
+	controller->SetInputMode(FInputModeGameOnly());
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
 void UCSelectActionWidget_Group::Hover(FString InKey)

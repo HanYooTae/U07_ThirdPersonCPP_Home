@@ -11,7 +11,7 @@ public class U07_ThirdPersonCPP : ModuleRules
 		// include할 때 Module Root경로를 안써도 되게끔 해줌
 		PublicIncludePaths.Add(ModuleDirectory);
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "GameplayTasks" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "GameplayTasks", "SlateCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

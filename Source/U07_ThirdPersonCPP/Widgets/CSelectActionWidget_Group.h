@@ -22,7 +22,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Unhover(FString InKey);
 
+public:
+	FORCEINLINE class UCSelectActionWidget_Icon* GetChildWidget(FString InKey) { return IconWidgets[InKey]; };
+
 protected:
+	UPROPERTY(EditAnywhere)
+		TArray<UTexture2D*> Images;
+
 	UPROPERTY(BlueprintReadOnly)
 		TMap<FString, class UCSelectActionWidget_Icon*> IconWidgets;
 
