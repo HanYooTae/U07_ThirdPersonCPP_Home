@@ -24,23 +24,31 @@ void UCFeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	float leftDistance;
-	Trace(LeftFootSocket, leftDistance);
+	FRotator leftRotation;
+	Trace(LeftFootSocket, leftDistance, leftRotation);
 
 	float rightDistance;
-	Trace(RightFootSocket, rightDistance);
+	FRotator rightRotation;
+	Trace(RightFootSocket, rightDistance, rightRotation);
 
-	// 둘 중 더 작은 값을 IK적용
+	// 둘 중 더 작은 값을 IK적용 (닿았으면 0, 떠있으면 -)
 	float offset = FMath::Min(leftDistance, rightDistance);
 
-	Data.LeftDistance.Y = UKismetMathLibrary::FInterpTo();
-	Data.RightDistance.Y;
+	Data.PelvisDistance.Z = UKismetMathLibrary::FInterpTo(Data.PelvisDistance.Z, offset, DeltaTime, InterpSpeed);
+
+	// 캡슐은 그대로 두고, 공중에 떠있는 발을 아래로 내림
+	Data.LeftDistance.Y = UKismetMathLibrary::FInterpTo(Data.LeftDistance.Y, (leftDistance - offset), DeltaTime, InterpSpeed);
+	Data.RightDistance.Y = UKismetMathLibrary::FInterpTo(Data.RightDistance.Y, (rightDistance - offset), DeltaTime, InterpSpeed);
+
+	Data.LeftRotation = UKismetMathLibrary::RInterpTo(Data.LeftRotation, leftRotation, DeltaTime, InterpSpeed);
+	Data.RightRotation = UKismetMathLibrary::RInterpTo(Data.RightRotation, rightRotation, DeltaTime, InterpSpeed);
 }
 
-void UCFeetComponent::Trace(FName InSocketName, float& OutDistance)
+void UCFeetComponent::Trace(FName InSocketName, float& OutDistance, FRotator& OutRotation)
 {
 	// 파라미터를 사용하는 지역변수들을 초기화
 	OutDistance = 0.f;
-
+	OutRotation = FRotator::ZeroRotator;
 
 	FVector socketLocation = OwnerCharacter->GetMesh()->GetSocketLocation(InSocketName);
 	FVector start = FVector(socketLocation.X, socketLocation.Y, OwnerCharacter->GetActorLocation().Z);
@@ -76,5 +84,33 @@ void UCFeetComponent::Trace(FName InSocketName, float& OutDistance)
 
 	// 발이 공중에 뜬 길이(공중에 떠있으면 음수 값이 나옴), 지면에 닿아있으면 0
 	OutDistance = AdjustHeight + undergroundLength - AddLength;
+
+	// Draw Debug Impact Normal
+	FVector impactNormal = hitResult.ImpactNormal;
+
+	// impactNormal의 회전 값을 가져오는데, pitch와 yaw만 가져올 수 있음
+	//OutRotation = impactNormal.Rotation();
+
+	float roll = UKismetMathLibrary::DegAtan2(impactNormal.Y, impactNormal.Z);
+	float pitch = -UKismetMathLibrary::DegAtan2(impactNormal.X, impactNormal.Z);
+	
+	OutRotation = FRotator(pitch, 0.f, roll);
+
+	pitch = FMath::Clamp(pitch, -45.f, 45.f);
+	roll = FMath::Clamp(roll, -45.f, 45.f);
+
+
+	DrawDebugDirectionalArrow
+	(
+		GetWorld(),
+		hitResult.ImpactPoint,
+		hitResult.ImpactPoint + impactNormal * 100.f,
+		3.f,
+		FColor::Orange,
+		false,
+		-1.f,
+		0,
+		3.f
+	);
 }
 

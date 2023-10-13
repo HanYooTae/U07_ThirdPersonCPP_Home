@@ -48,7 +48,7 @@ public:
 	FORCEINLINE const FFeetData& GetData() { return Data; }
 
 private:
-	void Trace(FName InSocketName, float& OutDistance);	// 공중에 떠있는 정도를 리턴받는 함수
+	void Trace(FName InSocketName, float& OutDistance, FRotator& OutRotation);	// 공중에 떠있는 정도를 리턴받는 함수
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "IK")
@@ -65,6 +65,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "IK")
 		float AdjustHeight = 5.f;
+
+	UPROPERTY(EditAnywhere, Category = "IK")
+		float InterpSpeed = 5.f;
 
 private:
 	FFeetData Data;
